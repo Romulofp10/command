@@ -1,0 +1,13 @@
+feat: tema claro/escuro, login, TopBar, tab bar e Button
+
+- Adiciona ThemeContext com suporte a light/dark e ThemeProvider no layout
+- Define preset de cores em theme/colors.ts (background, foreground, green-min/medium/big)
+- Cria theme/styles/colors.ts com paleta VERDES para tela de login
+- Implementa tela de login (gradiente, select de garçom, PIN, botão Entrar)
+- Substitui tags HTML por View no login (compatível com React Native)
+- Ajusta gradiente do login para verdes mais claros (#3CB780 → #2C8A66)
+- Cria TopBar com gradiente, ícone do estabelecimento e sino de notificação (Expo Vector Icons)
+- Implementa CustomTabBar com 3 abas (Mesas, Categorias, Perfil) e ícone ativo elevado em verde
+- Define index como tela inicial do layout autenticado (unstable_settings)
+- Atualiza Button com tamanhos do Figma (small/medium/big) e cores do tema (green-min/medium/big)
+- Adiciona suporte a ícone opcional (esquerda/direita) no Button
