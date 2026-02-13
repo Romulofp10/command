@@ -9,8 +9,8 @@ export default function TabsLayout() {
         headerShown: false,
       }}
     >
-      <Tabs.Screen name="mesas" options={{ title: 'MESAS' }} />
-      <Tabs.Screen name="perfil" options={{ title: 'PERFIL' }} />
+      <Tabs.Screen name="tables" options={{ title: 'MESAS' }} />
+      <Tabs.Screen name="profile" options={{ title: 'PERFIL' }} />
     </Tabs>
   )
 }

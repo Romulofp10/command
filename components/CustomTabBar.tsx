@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
-import { Platform, Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { VERDES } from 'theme/styles/colors'
 
@@ -8,9 +8,9 @@ const TAB_CONFIG: Record<
   string,
   { label: string; icon: keyof typeof Ionicons.glyphMap }
 > = {
-  mesas: { label: 'MESAS', icon: 'grid-outline' },
+  tables: { label: 'MESAS', icon: 'grid-outline' },
   index: { label: 'CATEGORIAS', icon: 'grid' },
-  perfil: { label: 'PERFIL', icon: 'person-outline' },
+  profile: { label: 'PERFIL', icon: 'person-outline' },
 }
 
 const INACTIVE_COLOR = '#9ca3af'
@@ -22,25 +22,14 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
 
   return (
     <View
+      className="flex-row bg-white rounded-t-[20px] pt-3 px-2 items-end justify-around shadow-xl"
       style={{
-        flexDirection: 'row',
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        paddingTop: 12,
         paddingBottom: insets.bottom + 8,
-        paddingHorizontal: 8,
-        alignItems: 'flex-end',
-        justifyContent: 'space-around',
-        ...Platform.select({
-          ios: {
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: -4 },
-            shadowOpacity: 0.08,
-            shadowRadius: 12,
-          },
-          android: { elevation: 16 },
-        }),
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 20,
+        elevation: 24,
       }}
     >
       {state.routes.map((route, index) => {
@@ -65,61 +54,34 @@ export function CustomTabBar({ state, descriptors, navigation }: BottomTabBarPro
           <Pressable
             key={route.key}
             onPress={onPress}
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}
+            className="flex-1 items-center justify-end"
           >
             {isFocused ? (
               <>
                 <View
+                  className="rounded-full items-center justify-center mb-2.5 bg-verdes-primary shadow-lg"
                   style={{
                     width: CIRCLE_SIZE,
                     height: CIRCLE_SIZE,
-                    borderRadius: CIRCLE_SIZE / 2,
-                    backgroundColor: VERDES.primary,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom:10,
-                    ...Platform.select({
-                      ios: {
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 8,
-                      },
-                      android: { elevation: 8 },
-                    }),
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 10,
+                    elevation: 12,
                   }}
                 >
                   <Ionicons name={config.icon} size={ICON_SIZE} color="#fff" />
                 </View>
-                <Text
-                  style={{
-                    fontSize: 11,
-                    fontWeight: '600',
-                    color: VERDES.primary,
-                    marginTop: 4,
-                    letterSpacing: 0.5,
-                  }}
-                >
+                <Text className="text-[11px] font-semibold text-verdes-primary mt-1 tracking-wide">
                   {config.label}
                 </Text>
               </>
             ) : (
               <>
-                <View style={{ marginBottom: 4 }}>
-                  <Ionicons
-                    name={config.icon}
-                    size={26}
-                    color={INACTIVE_COLOR}
-                  />
+                <View className="mb-1">
+                  <Ionicons name={config.icon} size={26} color={INACTIVE_COLOR} />
                 </View>
-                <Text
-                  style={{
-                    fontSize: 11,
-                    fontWeight: '500',
-                    color: INACTIVE_COLOR,
-                    letterSpacing: 0.5,
-                  }}
-                >
+                <Text className="text-[11px] font-medium text-gray-400 tracking-wide">
                   {config.label}
                 </Text>
               </>

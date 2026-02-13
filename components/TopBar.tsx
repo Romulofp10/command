@@ -20,48 +20,30 @@ export function TopBar() {
       end={{ x: 1, y: 0 }}
       style={{ paddingVertical: 12, paddingHorizontal: 16 }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        {/* Ícone do estabelecimento: círculo bege com borda verde + ícone padrão */}
+      <View className="flex-row items-center justify-between">
+        {/* Ícone do estabelecimento: círculo (padrão verde + branco) */}
         <View
-          style={{
-            width: CIRCLE_SIZE,
-            height: CIRCLE_SIZE,
-            borderRadius: CIRCLE_SIZE / 2,
-            backgroundColor: '#DEAC76',
-            borderWidth: 2,
-            borderColor: VERDES.backgroundStart,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          className="w-10 h-10 rounded-full border-2 items-center justify-center bg-verdes-circle-logo border-verdes-bg-start"
+          style={{ borderColor: VERDES.backgroundStart }}
         >
           <Ionicons name="restaurant" size={ESTABLISHMENT_ICON_SIZE} color="#fff" />
         </View>
 
         {/* Título e unidade */}
-        <View style={{ flex: 1, marginLeft: 12, marginRight: 12 }}>
-          <Text style={{ fontSize: 16, fontWeight: '700', color: '#fff' }} numberOfLines={1}>
+        <View className="flex-1 mx-3">
+          <Text className="text-base font-bold text-white" numberOfLines={1}>
             {Information.title}
           </Text>
-          <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 2 }} numberOfLines={1}>
+          <Text className="text-[13px] text-white/85 mt-0.5" numberOfLines={1}>
             {Information.unit}
           </Text>
         </View>
 
-        {/* Ícone de notificação: sino em círculo verde */}
+        {/* Botão notificação: verde padrão, branco no ícone */}
         <Pressable
-          style={({ pressed }) => ({
-            width: CIRCLE_SIZE,
-            height: CIRCLE_SIZE,
-            borderRadius: CIRCLE_SIZE / 2,
-            backgroundColor: '#449074',
-            alignItems: 'center',
-            justifyContent: 'center',
-            opacity: pressed ? 0.8 : 1,
-          })}
+          className="w-10 h-10 rounded-full items-center justify-center bg-verdes-circle-notification active:opacity-80"
         >
-       <View className='flex-col'>
-       <Ionicons name="notifications" size={NOTIFICATION_ICON_SIZE} color="#fff" />
-       </View>
+          <Ionicons name="notifications" size={NOTIFICATION_ICON_SIZE} color="#fff" />
         </Pressable>
       </View>
     </LinearGradient>

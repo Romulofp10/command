@@ -2,7 +2,7 @@ import { Container } from 'components/Container'
 import { TopBar } from 'components/TopBar'
 import { Text } from 'react-native'
 
-export default function Perfil() {
+export default function ProfileScreen() {
   return (
     <Container>
       <TopBar />

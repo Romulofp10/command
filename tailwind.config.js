@@ -25,6 +25,28 @@ module.exports = {
         'green-big': 'var(--color-green-big)',
         'green-big-pressed': 'var(--color-green-big-pressed)',
         'green-big-foreground': 'var(--color-green-big-foreground)',
+        // Padrão verde/branco (TopBar, TabBar, etc.)
+        verdes: {
+          'bg-start': '#3CB780',
+          'bg-end': '#2C8A66',
+          primary: '#10b981',
+          'primary-dark': '#059669',
+          'border-green': '#166534',
+          'circle-notification': '#449074',
+          'circle-logo': '#DEAC76',
+        },
+        // Design Gestão de Mesas (HTML ref)
+        primary: '#ec5b13',
+        'background-light': '#f8f6f6',
+        'background-dark': '#181311',
+        'card-dark': '#271f1c',
+        'border-dark': '#392e28',
+        'muted': '#b9a69d',
+      },
+      boxShadow: {
+        'tab-bar': '0 -4px 20px rgba(0,0,0,0.12)',
+        'tab-bar-strong': '0 -4px 24px rgba(0,0,0,0.18)',
+        'tab-circle': '0 4px 12px rgba(0,0,0,0.2)',
       },
     },
   },

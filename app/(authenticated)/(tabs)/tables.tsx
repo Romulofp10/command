@@ -1,12 +1,12 @@
 import { Container } from 'components/Container'
+import { TablesGrid } from 'components/TablesGrid'
 import { TopBar } from 'components/TopBar'
-import { Text } from 'react-native'
 
-export default function Mesas() {
+export default function TablesTabScreen() {
   return (
     <Container>
       <TopBar />
-      <Text className="p-4 text-foreground">Mesas</Text>
+      <TablesGrid />
     </Container>
   )
 }

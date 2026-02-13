@@ -1,20 +1,66 @@
 import { Button } from 'components/Button'
-import { Container } from 'components/Container'
-import { TopBar } from 'components/TopBar'
-import { Text, View } from 'react-native'
+import { TablesGrid } from 'components/TablesGrid'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import { useRouter } from 'expo-router'
+import { Pressable, Text, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
-export default function TelaInicial() {
+const PRIMARY = '#10b981'
+const NEUTRAL_DARK = '#1f2937'
+const NEUTRAL_BORDER = '#e5e7eb'
+const NEUTRAL_BG = '#f9fafb'
+
+export default function HomeScreen() {
+  const router = useRouter()
   return (
-    <Container>
-      <TopBar />
-    <View className='flex-row items-center justify-center border-b-2 border-gray-200 pb-4'>
-      <Text className='text-xl font-bold text-foreground pt-8'>Gestão de Mesas</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: NEUTRAL_BG }} edges={['top']}>
+      {/* Header: branco, ícone restaurante verde, título centralizado */}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+          backgroundColor: '#ffffff',
+          borderBottomWidth: 1,
+          borderBottomColor: NEUTRAL_BORDER,
+        }}
+      >
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Ionicons name="restaurant" size={28} color={PRIMARY} />
+        </View>
+        <Text
+          style={{
+            flex: 1,
+            fontSize: 18,
+            fontWeight: '700',
+            lineHeight: 22,
+            letterSpacing: -0.2,
+            color: NEUTRAL_DARK,
+            textAlign: 'center',
+          }}
+        >
+          Gestão de Mesas
+        </Text>
+        <View style={{ width: 40, height: 40 }} />
       </View>
-      <Button text="Abrir Nova Comanda" size="medium" style={{ marginTop: 16, marginHorizontal: 16, borderRadius: 10 }}  />
-      <View className='p-4'>
-        <Text className='text-lg font-bold text-foreground'>Status do Salão</Text>
-        <Text className='text-sm text-gray-500'>Selecione uma mesa para gerenciar</Text>
+      <View className="flex items-center justify-center py-4">
+        <Button
+          text="Abrir Nova Comanda"
+          size="medium"
+          onPress={() => router.push('/new-order')}
+        />
       </View>
-    </Container>
+      <TablesGrid />
+    </SafeAreaView>
   )
 }
