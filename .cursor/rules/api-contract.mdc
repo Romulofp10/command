@@ -1,0 +1,46 @@
+---
+description: Contrato da API – todo o app mobile deve estar alinhado ao repositório da API
+alwaysApply: true
+---
+
+# Contrato da API para o app mobile
+
+Este projeto consome uma API externa. **Todo o app** (telas, componentes, chamadas HTTP, tipos) deve permanecer alinhado ao contrato definido no repositório da API.
+
+## Repositório da API
+
+- **URL:** https://github.com/Romulofp10/orders-api
+- **Branch principal:** master (ajuste se for outro)
+
+Ao alterar fluxos que dependem da API (login, mesas, comandas, cardápio, categorias, produtos, pedidos), consultar o repositório acima para manter endpoints, métodos, payloads e tipos em conformidade.
+
+## Onde buscar os endpoints no repositório da API
+
+A API é **NestJS** (TypeScript). Use o repositório como fonte de verdade para paths, métodos e tipos.
+
+- **Controllers (rotas e métodos HTTP):** em `src/` – cada módulo costuma ter um `*.controller.ts` com decorators `@Get()`, `@Post()`, `@Patch()`, etc., e o path do recurso (ex.: `@Controller('categories')` → base `/categories`). **Aqui estão os endpoints que o app mobile deve chamar.**
+- **DTOs e tipos (request/response):** em `src/` – arquivos `*.dto.ts`, `*.entity.ts` ou interfaces em `*.controller.ts` / `*.service.ts`. Use esses tipos para tipar chamadas e estados no mobile (ex.: listagem de categorias, criação de pedido).
+- **Documentação:** em `docs/` – se existir OpenAPI/Swagger ou outro doc de API, use para validar paths, query params e bodies.
+- **Estrutura de pastas:** em geral `src/<módulo>/` (ex.: `categories`, `products`, `orders`) agrupa controller, service e DTOs do recurso.
+
+Ao implementar ou alterar uma tela/fluxo no app mobile que consome a API, abra o repositório **orders-api** (branch **master**), localize o módulo correspondente em `src/` e alinhe URLs, verbos HTTP e payloads aos controllers e DTOs definidos lá.
+
+## Escopo no app
+
+A regra vale para **todo o projeto**, incluindo:
+
+- `app/**` – rotas e telas (index, new-order, menu, table/[id], tabs)
+- `components/**` – componentes que exibem ou enviam dados da API
+- Código que define tipos de request/response, clientes HTTP (fetch, axios, etc.) ou serviços de API
+
+## Boas práticas
+
+- Usar como fonte de verdade os tipos, paths e métodos definidos no repositório da API (OpenAPI, tipos TypeScript exportados ou documentação no repo).
+- Manter base URL e autenticação (ex.: Bearer no header) centralizadas (ex.: env ou config).
+- Ao adicionar ou mudar endpoints no app, verificar se o contrato no repositório da API foi atualizado e refletir as mudanças no mobile.
+
+## Endpoints / recursos relevantes
+
+Liste aqui os endpoints que o app já utiliza (para referência rápida). A definição oficial fica nos controllers em **orders-api** (`src/`).
+
+- [Ex.: GET /categories, GET /products, POST /orders – preencha conforme for integrando o app com a API]
