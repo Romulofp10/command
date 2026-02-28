@@ -2,65 +2,47 @@ import { Button } from 'components/Button'
 import { TablesGrid } from 'components/TablesGrid'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { useRouter } from 'expo-router'
-import { Pressable, Text, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { Text, View } from 'react-native'
+import { useTheme } from 'context/ThemeContext'
+import { Container } from 'components/Container'
 
 const PRIMARY = '#10b981'
-const NEUTRAL_DARK = '#1f2937'
-const NEUTRAL_BORDER = '#e5e7eb'
-const NEUTRAL_BG = '#f9fafb'
 
 export default function HomeScreen() {
   const router = useRouter()
+  const { isDark } = useTheme()
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: NEUTRAL_BG }} edges={['top']}>
-      {/* Header: branco, ícone restaurante verde, título centralizado */}
+    <Container>
       <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingHorizontal: 16,
-          paddingVertical: 16,
-          backgroundColor: '#ffffff',
-          borderBottomWidth: 1,
-          borderBottomColor: NEUTRAL_BORDER,
-        }}
+        className={`flex-row items-center justify-between px-4 py-4 border-b ${
+          isDark
+            ? 'bg-background border-neutral-800'
+            : 'bg-white border-neutral-200'
+        }`}
       >
-        <View
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+        <View className="w-10 h-10 rounded-full items-center justify-center">
           <Ionicons name="restaurant" size={28} color={PRIMARY} />
         </View>
         <Text
-          style={{
-            flex: 1,
-            fontSize: 18,
-            fontWeight: '700',
-            lineHeight: 22,
-            letterSpacing: -0.2,
-            color: NEUTRAL_DARK,
-            textAlign: 'center',
-          }}
+          className={`flex-1 text-lg font-bold text-center tracking-tight ${
+            isDark ? 'text-foreground' : 'text-neutral-900'
+          }`}
         >
           Gestão de Mesas
         </Text>
-        <View style={{ width: 40, height: 40 }} />
+        <View className="w-10 h-10" />
       </View>
-      <View className="flex items-center justify-center py-4">
+
+      <View className="items-center justify-center py-4">
         <Button
           text="Abrir Nova Comanda"
           size="medium"
           onPress={() => router.push('/new-order')}
         />
       </View>
+
       <TablesGrid />
-    </SafeAreaView>
+    </Container>
   )
 }

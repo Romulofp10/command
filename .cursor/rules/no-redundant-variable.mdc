@@ -1,0 +1,150 @@
+---
+description: Evitar variáveis intermediárias desnecessárias; sempre usar objeto como entrada e retorno de funções
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Convenções de variáveis e assinaturas de funções
+
+Não crie variáveis apenas para armazenar o acesso a uma propriedade de objeto que já está disponível. Acesse a propriedade diretamente onde for usada.
+
+## Regra
+
+Se uma variável existe unicamente para referenciar `objeto.propriedade`, **remova-a** e acesse a propriedade diretamente.
+
+Exceção: extraia para variável apenas quando a propriedade for acessada **3 ou mais vezes** no mesmo escopo, ou quando o caminho for profundo (3+ níveis) e a clareza for prejudicada.
+
+## Exemplos
+
+```ts
+// ❌ BAD — variável intermediária desnecessária
+const userControls = user.controls
+if (userControls) {
+  render(userControls)
+}
+
+// ✅ GOOD — acesso direto
+if (user.controls) {
+  render(user.controls)
+}
+```
+
+```ts
+// ❌ BAD
+const isActive = item.status.isActive
+if (isActive) doSomething()
+
+// ✅ GOOD
+if (item.status.isActive) doSomething()
+```
+
+```ts
+// ✅ OK — extrair quando usada 3+ vezes
+const controls = user.controls
+if (controls) {
+  setA(controls)
+  setB(controls)
+  render(controls)
+}
+```
+
+```ts
+// ✅ OK — extrair quando o caminho é profundo e repetido
+const label = response.data.attributes.display.label
+return <Text>{label}</Text>
+```
+
+## Desestruturação
+
+Prefira desestruturação no parâmetro ou no topo da função quando múltiplas propriedades do mesmo objeto forem usadas:
+
+```ts
+// ❌ BAD
+function show(user: User) {
+  const name = user.name
+  const role = user.role
+  return `${name} – ${role}`
+}
+
+// ✅ GOOD
+function show({ name, role }: User) {
+  return `${name} – ${role}`
+}
+```
+
+---
+
+## Entrada de funções — sempre objeto
+
+Funções com **2 ou mais parâmetros** devem receber um único objeto nomeado (props/options). Parâmetros posicionais múltiplos tornam a ordem relevante e a leitura ambígua.
+
+```ts
+// ❌ BAD — ordem importa, chamada ilegível
+function createOrder(userId: string, tableId: string, items: Item[]) { ... }
+createOrder(userId, tableId, items)v
+
+// ✅ GOOD — nomeado, ordem irrelevante, desestruturado
+interface CreateOrderParams {
+  userId: string
+  tableId: string
+  items: Item[]
+}
+function createOrder({ userId, tableId, items }: CreateOrderParams) { ... }
+createOrder({ userId, tableId, items })
+```
+
+```ts
+// ✅ OK — parâmetro único não precisa de objeto
+function formatPrice(value: number) {
+  return `R$ ${value.toFixed(2)}`
+}
+```
+
+---
+
+## Retorno de funções — sempre objeto
+
+Funções que retornam **2 ou mais valores** devem retornar um objeto com propriedades nomeadas. Evite tuplas ou múltiplos retornos posicionais.
+
+```ts
+// ❌ BAD — tupla: a ordem importa, o consumidor precisa saber [0] e [1]
+function useCounter() {
+  return [count, increment]
+}
+const [count, increment] = useCounter()
+
+// ✅ GOOD — objeto nomeado: leitura clara, sem depender de posição
+function useCounter() {
+  return { count, increment }
+}
+const { count, increment } = useCounter()
+```
+
+```ts
+// ❌ BAD — retorno implícito de múltiplos valores via array
+async function fetchUser(id: string): Promise<[User, string]> {
+  return [user, token]
+}
+
+// ✅ GOOD
+interface FetchUserResult {
+  user: User
+  token: string
+}
+async function fetchUser(id: string): Promise<FetchUserResult> {
+  return { user, token }
+}
+```
+
+---
+
+## Resumo
+
+| Situação | Ação |
+|----------|------|
+| Propriedade usada 1–2× | Acesse diretamente: `obj.prop` |
+| Propriedade usada 3+× | Extraia para variável ou desestruture |
+| Caminho profundo (3+ níveis) repetido | Extraia para variável |
+| Múltiplas props do mesmo objeto | Desestruture |
+| Função com 2+ parâmetros | Use objeto como entrada `({ a, b }: Params)` |
+| Função que retorna 2+ valores | Retorne objeto `{ a, b }`, nunca tupla |

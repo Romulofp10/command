@@ -1,10 +1,7 @@
 import { TableCard } from 'components/TableCard'
+import { useTheme } from 'context/ThemeContext'
 import { useRouter } from 'expo-router'
 import { ScrollView, Text, View } from 'react-native'
-
-const NEUTRAL_DARK = '#1f2937'
-const GRAY_500 = '#6b7280'
-const NEUTRAL_BG = '#f9fafb'
 
 const TABLES_MOCK = [
   { id: '01', name: 'Mesa 01', status: 'livre' as const, commandIds: [] },
@@ -17,10 +14,11 @@ const TABLES_MOCK = [
 
 export function TablesGrid() {
   const router = useRouter()
+  const { isDark } = useTheme()
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: NEUTRAL_BG }}
+      style={{ flex: 1, backgroundColor: isDark ? '#0a0a0a' : '#f9fafb' }}
       contentContainerStyle={{ paddingBottom: 24 }}
     >
       <View style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
@@ -30,12 +28,12 @@ export function TablesGrid() {
             fontWeight: '700',
             lineHeight: 22,
             letterSpacing: -0.2,
-            color: NEUTRAL_DARK,
+            color: isDark ? '#fafafa' : '#1f2937',
           }}
         >
           Status do Salão
         </Text>
-        <Text style={{ fontSize: 14, color: GRAY_500, marginTop: 2 }}>
+        <Text style={{ fontSize: 14, color: isDark ? '#9ca3af' : '#6b7280', marginTop: 2 }}>
           Selecione uma mesa para gerenciar
         </Text>
       </View>

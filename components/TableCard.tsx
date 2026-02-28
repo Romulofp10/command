@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons'
+import { useTheme } from 'context/ThemeContext'
 import { Pressable, Text, View } from 'react-native'
 
 export type TableStatus = 'livre' | 'ocupada'
@@ -12,18 +13,11 @@ export interface TableCardProps {
   onPress?: () => void
 }
 
-/** Cores do HTML (Gestão de Mesas em tons de cinza) */
 const PRIMARY = '#10b981'
-const NEUTRAL_DARK = '#1f2937'
-const NEUTRAL_BG = '#f9fafb'
-const NEUTRAL_BORDER = '#e5e7eb'
 const GRAY_400 = '#9ca3af'
-const GRAY_600 = '#4b5563'
-const EMERALD_50 = '#ecfdf5'
-const EMERALD_700 = '#047857'
-const GRAY_100 = '#f3f4f6'
 
 export function TableCard({ tableName, status, commandIds = [], onPress }: TableCardProps) {
+  const { isDark } = useTheme()
   const isLivre = status === 'livre'
 
   return (
@@ -35,25 +29,28 @@ export function TableCard({ tableName, status, commandIds = [], onPress }: Table
         gap: 12,
         padding: 16,
         borderRadius: 12,
-        backgroundColor: '#ffffff',
+        backgroundColor: isDark ? '#171717' : '#ffffff',
         borderLeftWidth: 4,
         borderLeftColor: isLivre ? PRIMARY : GRAY_400,
         borderTopWidth: 1,
         borderRightWidth: 1,
         borderBottomWidth: 1,
-        borderTopColor: NEUTRAL_BORDER,
-        borderRightColor: NEUTRAL_BORDER,
-        borderBottomColor: NEUTRAL_BORDER,
+        borderTopColor: isDark ? '#262626' : '#e5e7eb',
+        borderRightColor: isDark ? '#262626' : '#e5e7eb',
+        borderBottomColor: isDark ? '#262626' : '#e5e7eb',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
+        shadowOpacity: isDark ? 0.3 : 0.05,
         shadowRadius: 2,
         elevation: 2,
       })}
     >
-      {/* Linha: nome da mesa + ícone (check_circle livre, group/person ocupada) */}
+      {/* Linha: nome da mesa + ícone */}
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-        <Text style={{ fontSize: 16, fontWeight: '700', color: NEUTRAL_DARK }} numberOfLines={1}>
+        <Text
+          style={{ fontSize: 16, fontWeight: '700', color: isDark ? '#fafafa' : '#1f2937' }}
+          numberOfLines={1}
+        >
           {tableName}
         </Text>
         {isLivre ? (
@@ -74,7 +71,9 @@ export function TableCard({ tableName, status, commandIds = [], onPress }: Table
             paddingHorizontal: 8,
             paddingVertical: 2,
             borderRadius: 9999,
-            backgroundColor: isLivre ? EMERALD_50 : GRAY_100,
+            backgroundColor: isLivre
+              ? isDark ? '#052e16' : '#ecfdf5'
+              : isDark ? '#1f2937' : '#f3f4f6',
           }}
         >
           <Text
@@ -82,7 +81,9 @@ export function TableCard({ tableName, status, commandIds = [], onPress }: Table
               fontSize: 10,
               fontWeight: '700',
               letterSpacing: 0.5,
-              color: isLivre ? EMERALD_700 : GRAY_600,
+              color: isLivre
+                ? isDark ? '#86efac' : '#047857'
+                : isDark ? '#9ca3af' : '#4b5563',
               textTransform: 'uppercase',
             }}
           >
@@ -101,15 +102,15 @@ export function TableCard({ tableName, status, commandIds = [], onPress }: Table
             <View
               key={id}
               style={{
-                backgroundColor: NEUTRAL_BG,
+                backgroundColor: isDark ? '#0a0a0a' : '#f9fafb',
                 borderWidth: 1,
-                borderColor: NEUTRAL_BORDER,
+                borderColor: isDark ? '#262626' : '#e5e7eb',
                 paddingHorizontal: 8,
                 paddingVertical: 2,
                 borderRadius: 4,
               }}
             >
-              <Text style={{ fontSize: 10, fontWeight: '600', color: GRAY_600 }}>
+              <Text style={{ fontSize: 10, fontWeight: '600', color: isDark ? '#9ca3af' : '#4b5563' }}>
                 #{id}
               </Text>
             </View>

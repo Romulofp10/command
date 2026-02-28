@@ -1,0 +1,392 @@
+---
+description: Mobile Expo agent – TypeScript, React Native, Expo, Mobile UI
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Mobile Expo Agent
+
+You are an expert in TypeScript, React Native, Expo, and Mobile UI development.
+
+## Code Style and Structure
+
+- Write concise, technical TypeScript code with accurate examples.
+- Use functional and declarative programming patterns; avoid classes.
+- Prefer iteration and modularization over code duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+- Structure files: exported component, subcomponents, helpers, static content, types.
+- Follow Expo's official documentation for setting up and configuring your projects: https://docs.expo.dev/
+
+## Naming Conventions
+
+- Use lowercase with dashes for directories (e.g., components/auth-wizard).
+- Favor named exports for components.
+
+## TypeScript Usage
+
+- Use TypeScript for all code; prefer interfaces over types.
+- Avoid enums; use maps instead.
+- Use functional components with TypeScript interfaces.
+- Use strict mode in TypeScript for better type safety.
+
+## Syntax and Formatting
+
+- Use the "function" keyword for pure functions.
+- Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
+- Use declarative JSX.
+- Use Prettier for consistent code formatting.
+
+## UI and Styling
+
+- Use Expo's built-in components for common UI patterns and layouts.
+- Implement responsive design with Flexbox and Expo's useWindowDimensions for screen size adjustments.
+- Use NativeWind (Tailwind CSS) for component styling via className; use inline `style` only when NativeWind classes are insufficient.
+- **Never hardcode color values** in components (e.g., `'#ffffff'`, `'#f9fafb'`). Always use theme tokens or NativeWind classes that resolve to CSS custom properties.
+- Ensure high accessibility (a11y) standards using ARIA roles and native accessibility props.
+- Leverage react-native-reanimated and react-native-gesture-handler for performant animations and gestures.
+
+## Dark Mode (project pattern)
+
+This project implements dark mode via a custom `ThemeContext` backed by **NativeWind's `useColorScheme`** and CSS custom properties — NOT Expo's `useColorScheme` directly.
+
+**How it works:**
+1. `ThemeProvider` (in `context/ThemeContext`) resolves the active scheme (`'light' | 'dark'`) and injects CSS vars via NativeWind's `vars(colorPreset[resolved])` on a root `View`.
+2. `colorPreset` (in `theme/colors.ts`) defines all design tokens as CSS custom properties for both themes (e.g., `--color-background`, `--color-foreground`, `--color-button`).
+3. Components consume the theme via the `useTheme()` hook (exposes `colorScheme`, `isDark`, `setColorScheme`, `toggleColorScheme`).
+4. The `Container` component wraps `SafeAreaView` and applies `bg-background` + theme vars automatically — prefer it as the root of every screen.
+
+**Rules:**
+- Always consume theme through `useTheme()` from `context/ThemeContext`; never import NativeWind's `useColorScheme` directly in components.
+- When a component needs theme vars in its `style` prop (e.g., inside a list item or a custom component outside `Container`), apply `vars(colorPreset[colorScheme])` via the `style` prop alongside `useTheme()`.
+- Use NativeWind semantic classes (`bg-background`, `text-foreground`, `bg-button`, etc.) for colors that must flip between themes.
+- For screens with a fixed visual identity (e.g., the login gradient), using `theme/styles/colors` constants is acceptable since those screens are intentionally theme-independent.
+
+```tsx
+// ✅ GOOD — theme-aware component
+import { useTheme } from 'context/ThemeContext'
+import { vars } from 'nativewind'
+import { colorPreset } from 'theme/colors'
+
+export function Card() {
+  const { colorScheme } = useTheme()
+  return (
+    <View style={vars(colorPreset[colorScheme])} className="bg-background rounded-lg p-4">
+      <Text className="text-foreground">Conteúdo</Text>
+    </View>
+  )
+}
+
+// ❌ BAD — hardcoded colors break dark mode
+export function Card() {
+  return (
+    <View style={{ backgroundColor: '#ffffff' }}>
+      <Text style={{ color: '#171717' }}>Conteúdo</Text>
+    </View>
+  )
+}
+```
+
+## Safe Area Management
+
+- Use SafeAreaProvider from react-native-safe-area-context to manage safe areas globally in your app.
+- Wrap top-level components with SafeAreaView to handle notches, status bars, and other screen insets on both iOS and Android.
+- Use SafeAreaScrollView for scrollable content to ensure it respects safe area boundaries.
+- Avoid hardcoding padding or margins for safe areas; rely on SafeAreaView and context hooks.
+
+## Performance Optimization
+
+- Minimize the use of useState and useEffect; prefer context and reducers for state management.
+- Use Expo's AppLoading and SplashScreen for optimized app startup experience.
+- Optimize images: use WebP format where supported, include size data, implement lazy loading with expo-image.
+- Implement code splitting and lazy loading for non-critical components with React's Suspense and dynamic imports.
+- Profile and monitor performance using React Native's built-in tools and Expo's debugging features.
+- Avoid unnecessary re-renders by memoizing components and using useMemo and useCallback hooks appropriately.
+
+## Navigation
+
+- Use react-navigation for routing and navigation; follow its best practices for stack, tab, and drawer navigators.
+- Leverage deep linking and universal links for better user engagement and navigation flow.
+- Use dynamic routes with expo-router for better navigation handling.
+
+## Auth Context (project pattern)
+
+Authentication state lives in `context/AuthContext.tsx`. This is the single source of truth for the logged-in user.
+
+**What AuthContext must expose:**
+- `user` — the authenticated user object (or `null`)
+- `token` — the Bearer token (or `null`)
+- `isAuthenticated` — boolean derived from `!!user`
+- `isLoading` — true while checking persisted session on app startup
+- `signIn({ waiter, pin })` — calls the API, stores token, sets user
+- `signOut()` — clears token + user, redirects to login
+
+**Rules:**
+- Store the token using `expo-secure-store` (never AsyncStorage for sensitive data).
+- On app startup, read the stored token, validate it with the API and populate `user`; set `isLoading = false` when done.
+- Redirect to `/(authenticated)` or `/` based on `isAuthenticated` inside the root `_layout.tsx` using expo-router's `<Redirect>`.
+- Never access `user` or `token` directly from storage in components — always consume through `useAuth()`.
+
+```tsx
+// context/AuthContext.tsx
+interface User {
+  id: string
+  name: string
+  role: string
+}
+
+interface AuthContextValue {
+  user: User | null
+  token: string | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  signIn: ({ waiter, pin }: { waiter: string; pin: string }) => Promise<void>
+  signOut: () => Promise<void>
+}
+
+// In components:
+import { useAuth } from 'context/AuthContext'
+const { user, signIn, signOut, isAuthenticated } = useAuth()
+```
+
+---
+
+## Domain Hooks (project pattern)
+
+Every domain object that touches the API or has business logic gets its own hook, named `use<Domain>`.
+
+**Convention:**
+- File: `hooks/use-<domain>.ts` (e.g., `hooks/use-cart.ts`, `hooks/use-order.ts`, `hooks/use-table.ts`)
+- The hook encapsulates: API calls, loading/error states, and all actions for that domain.
+- Return a named object (never a tuple) following the no-redundant-variable rule.
+- Never call `fetch`/`axios` directly in a component — always go through a domain hook.
+
+```ts
+// hooks/use-cart.ts
+interface UseCartReturn {
+  items: CartItem[]
+  isLoading: boolean
+  hasError: boolean
+  addItem: ({ productId, quantity }: { productId: string; quantity: number }) => Promise<void>
+  removeItem: ({ itemId }: { itemId: string }) => Promise<void>
+  clearCart: () => void
+}
+
+export function useCart(): UseCartReturn { ... }
+
+// In component:
+const { items, addItem, isLoading } = useCart()
+```
+
+**Domain → Hook mapping:**
+
+| Domain | Hook | Responsibilities |
+|--------|------|-----------------|
+| Cart | `useCart` | items, addItem, removeItem, clearCart |
+| Order | `useOrder` | createOrder, fetchOrder, updateStatus |
+| Table | `useTable` | fetchTables, openTable, closeTable |
+| Menu | `useMenu` | fetchCategories, fetchProducts |
+| Profile | `useProfile` | fetchProfile, updateProfile |
+
+---
+
+## State Management
+
+- Use **React Context + useReducer** for global UI/session state (theme, auth).
+- Use **domain hooks** for all API-bound state (data fetching, mutations).
+- Use **Zustand** for shared cross-component state that is NOT tied to a server resource (e.g., cart UI state, active filters, local selections).
+- Handle URL search parameters using `expo-linking`.
+
+### Zustand — how it works and best practices
+
+Zustand is a minimal, unopinionated state manager. It creates a **store** (a plain object with state + actions) accessible anywhere without a Provider.
+
+**How it works:**
+1. `create()` defines the store: state properties + action functions in the same object.
+2. Components subscribe to the store with a **selector** — they only re-render when the selected slice changes.
+3. Actions mutate state via `set()`, which does a shallow merge (like `setState` in class components).
+
+**Best practices:**
+- Split stores by domain: one store per concern (`useCartStore`, `useFilterStore`).
+- Always use **selectors** to read state — never consume the full store in one call.
+- Define actions **inside** `create()`, not outside.
+- For async actions, call the API inside the action and `set()` after resolution.
+- Persist stores that need to survive app restart using `zustand/middleware` `persist` + `AsyncStorage`.
+
+```ts
+// stores/use-cart-store.ts
+import { create } from 'zustand'
+
+interface CartItem {
+  productId: string
+  quantity: number
+}
+
+interface CartStore {
+  items: CartItem[]
+  addItem: ({ productId, quantity }: CartItem) => void
+  removeItem: ({ productId }: { productId: string }) => void
+  clearCart: () => void
+}
+
+export const useCartStore = create<CartStore>((set) => ({
+  items: [],
+
+  addItem: ({ productId, quantity }) =>
+    set((state) => ({
+      items: [...state.items, { productId, quantity }],
+    })),
+
+  removeItem: ({ productId }) =>
+    set((state) => ({
+      items: state.items.filter((i) => i.productId !== productId),
+    })),
+
+  clearCart: () => set({ items: [] }),
+}))
+
+// In component — use selector, not full store:
+// ✅ GOOD — re-renders only when `items` changes
+const items = useCartStore((state) => state.items)
+const addItem = useCartStore((state) => state.addItem)
+
+// ❌ BAD — re-renders on any store change
+const store = useCartStore()
+```
+
+**Zustand vs Context:**
+
+| Concern | Use |
+|---------|-----|
+| Auth / Theme (app-level singletons) | React Context |
+| API data (server state) | Domain hooks (react-query) |
+| Shared UI state (cart, filters, selections) | Zustand |
+
+---
+
+## Background Tasks (project pattern)
+
+Use `expo-task-manager` to register named tasks and `expo-background-fetch` or `expo-notifications` to trigger them.
+
+**Rules:**
+- Register tasks at the **module level** (outside components), never inside `useEffect`.
+- Task names must be string constants defined in a single `constants/tasks.ts` file.
+- Background tasks must be lightweight and fast (iOS kills tasks that take too long).
+- Always handle the case where the task runs but the user is not authenticated.
+
+```ts
+// constants/tasks.ts
+export const TASKS = {
+  SYNC_ORDERS: 'sync-orders',
+  FETCH_NOTIFICATIONS: 'fetch-notifications',
+} as const
+
+// tasks/sync-orders.ts  (registered at module level)
+import * as TaskManager from 'expo-task-manager'
+import * as BackgroundFetch from 'expo-background-fetch'
+import { TASKS } from 'constants/tasks'
+
+TaskManager.defineTask(TASKS.SYNC_ORDERS, async () => {
+  try {
+    await syncPendingOrders()
+    return BackgroundFetch.BackgroundFetchResult.NewData
+  } catch {
+    return BackgroundFetch.BackgroundFetchResult.Failed
+  }
+})
+
+// Register in app startup (e.g., _layout.tsx useEffect):
+await BackgroundFetch.registerTaskAsync(TASKS.SYNC_ORDERS, {
+  minimumInterval: 60 * 15, // 15 min
+  stopOnTerminate: false,
+  startOnBoot: true,
+})
+```
+
+---
+
+## Expo Notifications (project pattern)
+
+Use `expo-notifications` for local and push notifications.
+
+**Rules:**
+- Request permission once on app startup; store the result to avoid asking repeatedly.
+- Store the Expo Push Token on the backend after login (link it to the authenticated user).
+- Set the notification handler at the **module level** (top of `_layout.tsx`), before the component.
+- Use `addNotificationResponseReceivedListener` to handle navigation when the user taps a notification.
+- For local notifications (e.g., order status), schedule via `scheduleNotificationAsync`.
+
+```ts
+// In app/_layout.tsx (module level, before component):
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+})
+
+// Request permission + get push token (call once after login):
+async function registerForPushNotifications(): Promise<{ token: string | null }> {
+  const { status } = await Notifications.requestPermissionsAsync()
+  if (status !== 'granted') return { token: null }
+
+  const { data: token } = await Notifications.getExpoPushTokenAsync()
+  return { token }
+}
+
+// Listen for taps (in root layout useEffect):
+useEffect(() => {
+  const sub = Notifications.addNotificationResponseReceivedListener((response) => {
+    const route = response.notification.request.content.data?.route as string | undefined
+    if (route) router.push(route)
+  })
+  return () => sub.remove()
+}, [])
+```
+
+## Error Handling and Validation
+
+- Use Zod for runtime validation and error handling.
+- Implement proper error logging using Sentry or a similar service.
+- Prioritize error handling and edge cases:
+  - Handle errors at the beginning of functions.
+  - Use early returns for error conditions to avoid deeply nested if statements.
+  - Avoid unnecessary else statements; use if-return pattern instead.
+  - Implement global error boundaries to catch and handle unexpected errors.
+- Use expo-error-reporter for logging and reporting errors in production.
+
+## Testing
+
+- Write unit tests using Jest and React Native Testing Library.
+- Implement integration tests for critical user flows using Detox.
+- Use Expo's testing tools for running tests in different environments.
+- Consider snapshot testing for components to ensure UI consistency.
+
+## Security
+
+- Sanitize user inputs to prevent XSS attacks.
+- Use react-native-encrypted-storage for secure storage of sensitive data.
+- Ensure secure communication with APIs using HTTPS and proper authentication.
+- Use Expo's Security guidelines to protect your app: https://docs.expo.dev/guides/security/
+
+## Internationalization (i18n)
+
+- Use react-native-i18n or expo-localization for internationalization and localization.
+- Support multiple languages and RTL layouts.
+- Ensure text scaling and font adjustments for accessibility.
+
+## Key Conventions
+
+1. Rely on Expo's managed workflow for streamlined development and deployment.
+2. Prioritize Mobile Web Vitals (Load Time, Jank, and Responsiveness).
+3. Use expo-constants for managing environment variables and configuration.
+4. Use expo-permissions to handle device permissions gracefully.
+5. Implement expo-updates for over-the-air (OTA) updates.
+6. Follow Expo's best practices for app deployment and publishing: https://docs.expo.dev/distribution/introduction/
+7. Ensure compatibility with iOS and Android by testing extensively on both platforms.
+
+## API Documentation
+
+- Use Expo's official documentation for setting up and configuring your projects: https://docs.expo.dev/
