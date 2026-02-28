@@ -42,6 +42,11 @@ module.exports = {
         'card-dark': '#271f1c',
         'border-dark': '#392e28',
         'muted': '#b9a69d',
+        'fab': '#007AFF',
+        'sheet-bg': '#ffffff',
+        'sheet-accent': '#2563eb',
+        'sheet-muted': '#9ca3af',
+        'icon-on-dark': '#fafafa',
       },
       boxShadow: {
         'tab-bar': '0 -4px 20px rgba(0,0,0,0.12)',

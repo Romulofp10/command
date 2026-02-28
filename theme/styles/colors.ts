@@ -3,6 +3,20 @@
  * Usado em app/index.tsx e em telas que precisam da mesma identidade visual.
  */
 
+/** Cor de ícones em telas com fundo escuro fixo (cardápio, menu, categoria) */
+export const ICON_ON_DARK = '#fafafa'
+/** Ícone de busca placeholder */
+export const ICON_MUTED = '#9ca3af'
+/** Cor primária laranja (destaque, customizável) */
+export const PRIMARY_ORANGE = '#ec5b13'
+
+/** Cores do BottomSheet de customização (design light fixo) */
+export const SHEET = {
+  bg: '#ffffff',
+  accent: '#2563eb',
+  muted: '#9ca3af',
+} as const
+
 export const VERDES = {
   /** Gradiente: verde médio (esquerda) → verde esmeralda (direita) */
   backgroundStart: '#3CB780',
