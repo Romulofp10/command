@@ -1,9 +1,6 @@
 ---
-description: Mobile Expo agent – TypeScript, React Native, Expo, Mobile UI
-globs: "**/*.{ts,tsx}"
-alwaysApply: false
+alwaysApply: true
 ---
-
 # Mobile Expo Agent
 
 You are an expert in TypeScript, React Native, Expo, and Mobile UI development.

@@ -1,9 +1,6 @@
 ---
-description: Evitar variáveis intermediárias desnecessárias; sempre usar objeto como entrada e retorno de funções
-globs: "**/*.{ts,tsx}"
-alwaysApply: false
+alwaysApply: true
 ---
-
 # Convenções de variáveis e assinaturas de funções
 
 Não crie variáveis apenas para armazenar o acesso a uma propriedade de objeto que já está disponível. Acesse a propriedade diretamente onde for usada.
